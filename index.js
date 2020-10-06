@@ -27,8 +27,8 @@ app.post("/", async (request, response) => {
 });
 
 // READ
-app.get("/:id", (request, response) => {
-  const obj = dictionary[request.params.id];
+app.get("/:id", async (request, response) => {
+  const obj = await User.findById(request.params.id);
   if (!obj) {
     return response.status(404).send({
       message: "Not found"
@@ -38,20 +38,21 @@ app.get("/:id", (request, response) => {
 });
 
 // UPDATE
-app.put("/:id", (request, response) => {
+app.put("/:id", async (request, response) => {
   const obj = request.body;
-  dictionary[request.params.id] = obj;
   if (!obj) {
     return response.status(412).send({
       message: "O corpo da mensagem é obrigatório"
     });
+  } else {
+    const upd = await User.replaceOne({ _id: request.params.id }, obj);
   }
   response.status(200).send(obj);
 });
 
 // DELETE
 app.delete("/:id", (request, response) => {
-  dictionary[request.params.id] = null;
+  User.remove( { _id: request.params.id } );
   response.status(204).end();
 });
 
